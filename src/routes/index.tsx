@@ -29,6 +29,23 @@ const products = [
 type Product = (typeof products)[number];
 type View = "store" | "checkout" | "success";
 
+const carouselItems = [
+  ...products.map((p) => ({ title: p.name, subtitle: p.short, price: `${formatPrice(p.price)} ر.س`, image: p.image })),
+  ...[
+    ["سرير الزمرد", "خطوط جريئة لمساحة شبابية", 2099, products[1]!.image],
+    ["سرير الغروب", "دفء اللون وجلال التفاصيل", 2499, products[2]!.image],
+    ["سرير النجمة", "توقيع عصري بتنجيد فاخر", 2290, products[3]!.image],
+    ["سرير الواحة", "سكينة واتساع لغرفة مرتبة", 1990, products[4]!.image],
+    ["سرير المرجان", "لمسة دافئة تضيء الغرفة", 2790, products[5]!.image],
+    ["سرير الأمل", "راحة تنبض بكل التفاصيل", 2599, products[0]!.image],
+  ].map(([title, short, price, image]) => ({
+    title: title as string,
+    subtitle: short as string,
+    price: `${formatPrice(price as number)} ر.س`,
+    image: image as string,
+  })),
+];
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -173,7 +190,7 @@ function StorePage() {
               <h2 className="mt-2 text-3xl font-extrabold sm:text-4xl">كتالوج حي لسرايرنا</h2>
               <p className="mt-3 leading-7 text-primary-foreground/70">تصفّح الأسرّة الأكثر مبيعاً بتجربة تفاعلية — اسحب الكروت أو استخدم الأسهم.</p>
             </div>
-            <CoverflowCarousel items={products.map((p) => ({ title: p.name, subtitle: p.short, price: `${formatPrice(p.price)} ر.س`, image: p.image }))} />
+            <CoverflowCarousel items={carouselItems} />
           </div>
         </section>
 
