@@ -3,7 +3,7 @@ import { theme } from "./theme";
 
 const CARD_W = "min(320px, 72vw)";
 const css = `
-  .pnc-viewport { position: relative; margin: 0 auto; max-width: 1100px; perspective: 1800px; touch-action: pan-y; user-select: none; }
+  .pnc-viewport { position: relative; width: 100%; margin: 0 auto; perspective: 1800px; touch-action: pan-y; user-select: none; }
   .pnc-card { position: absolute; left: 50%; top: 50%; border-radius: 24px; overflow: hidden; cursor: pointer;
     will-change: transform, opacity; transition: transform .8s ${theme.ease}, opacity .6s ease; transform-style: preserve-3d; }
   .pnc-inner { position: absolute; inset: 0; padding: 22px; border-radius: 24px; display: flex; flex-direction: column; justify-content: flex-end;
@@ -36,21 +36,23 @@ interface Props {
   cardWidth?: string;
 }
 
-function slot(index: number, active: number, count: number, rtl: boolean) {
+function slot(index: number, active: number, count: number, rtl: boolean, wide: boolean) {
   let off = index - active;
   off = ((off % count) + count) % count;
   if (off > count / 2) off -= count;
   const abs = Math.min(Math.abs(off), 2);
   const dir = (off < 0 ? -1 : 1) * (rtl ? -1 : 1);
+  const a = (wide ? 60 : 36) + "%";
+  const o = (wide ? 120 : 74) + "%";
   let transform: string, opacity: number;
   if (abs === 0) {
-    transform = "translateX(0px) translateZ(190px) scale(1) rotateY(0deg)";
+    transform = "translateX(0%) translateZ(190px) scale(1) rotateY(0deg)";
     opacity = 1;
   } else if (abs === 1) {
-    transform = `translateX(${dir * 165}px) translateZ(70px) scale(0.86) rotateY(${dir * -24}deg)`;
+    transform = `translateX(${dir < 0 ? "-" : ""}${a}) translateZ(70px) scale(0.86) rotateY(${dir * -24}deg)`;
     opacity = 0.95;
   } else {
-    transform = `translateX(${dir * 335}px) translateZ(-40px) scale(0.7) rotateY(${dir * -46}deg)`;
+    transform = `translateX(${dir < 0 ? "-" : ""}${o}) translateZ(-40px) scale(0.7) rotateY(${dir * -46}deg)`;
     opacity = 0.42;
   }
   return {
@@ -59,6 +61,18 @@ function slot(index: number, active: number, count: number, rtl: boolean) {
     zIndex: 50 - abs,
     pointerEvents: (abs > 1 ? "none" : "auto") as "none" | "auto",
   };
+}
+
+function useWide() {
+  const [wide, setWide] = useState(true);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 760px)");
+    const on = () => setWide(mq.matches);
+    on();
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
+  return wide;
 }
 
 /** Coverflow / fan carousel — 5 visible cards, center on top, arrows + drag + keys. */
@@ -71,6 +85,7 @@ export default function CoverflowCarousel({
   const [active, setActive] = useState(0);
   const startX = useRef<number | null>(null);
   const moved = useRef(0);
+  const wide = useWide();
 
   const go = useCallback(
     (dir: number) => setActive((a) => (a + dir + items.length) % items.length),
@@ -89,7 +104,7 @@ export default function CoverflowCarousel({
   const cards = useMemo(
     () =>
       items.map((it, i) => {
-        const s = slot(i, active, items.length, rtl);
+        const s = slot(i, active, items.length, rtl, wide);
         const card = (
           <div
             key={i}
@@ -140,10 +155,8 @@ export default function CoverflowCarousel({
         );
         return card;
       }),
-    [items, active, rtl, height, cardWidth],
+    [items, active, rtl, height, cardWidth, wide],
   );
-
-  const arrowEdge = "max(8px, calc(50% - min(560px, 50vw)))";
 
   return (
     <section dir={rtl ? "rtl" : "ltr"} style={{ position: "relative", textAlign: "center" }}>
@@ -175,26 +188,26 @@ export default function CoverflowCarousel({
         }}
       >
         {cards}
+
+        <button
+          className="pnc-arrow"
+          aria-label="السابق"
+          style={{ right: "max(8px, 3%)" }}
+          onClick={() => go(-1)}
+        >
+          ❮
+        </button>
+        <button
+          className="pnc-arrow"
+          aria-label="التالي"
+          style={{ left: "max(8px, 3%)" }}
+          onClick={() => go(1)}
+        >
+          ❯
+        </button>
       </div>
 
-      <button
-        className="pnc-arrow"
-        aria-label="السابق"
-        style={{ right: arrowEdge }}
-        onClick={() => go(-1)}
-      >
-        ❮
-      </button>
-      <button
-        className="pnc-arrow"
-        aria-label="التالي"
-        style={{ left: arrowEdge }}
-        onClick={() => go(1)}
-      >
-        ❯
-      </button>
-
-      <p style={{ marginTop: 12, color: theme.muted, letterSpacing: 3 }}>
+      <p style={{ marginTop: 14, color: theme.muted, letterSpacing: 3 }}>
         <b style={{ color: theme.goldSoft, fontSize: 18 }}>{active + 1}</b> / {items.length}
       </p>
     </section>

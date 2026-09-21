@@ -217,7 +217,7 @@ function StorePage() {
           </div>
         </section>
 
-        <section id="about" className="grid lg:grid-cols-2">
+        <section id="about" dir="rtl" className="grid lg:grid-cols-2">
           <div className="min-h-[380px]"><ParallaxImage src="https://images.unsplash.com/photo-1615874694520-474822394e73?auto=format&fit=crop&w=1400&q=85" alt="تفاصيل سرير فاخر مصنوع بعناية" /></div>
           <div className="flex items-center bg-card px-6 py-14 sm:px-14 lg:px-20"><div className="max-w-xl"><p className="font-bold text-primary">صناعة نهتم بكل تفاصيلها</p><h2 className="mt-3 text-3xl font-extrabold sm:text-4xl">جودة تضمنها سنوات من الخبرة</h2><p className="mt-5 leading-8 text-muted-foreground">نصنع أسرّتنا لتكون جزءاً من راحتك لسنوات، بخامات مختارة وعناية تبدأ من التصميم حتى التركيب في منزلك.</p><ul className="mt-8 grid gap-4">{["خامات متينة مختارة بعناية", "ضمان شامل لراحة بالك", "تركيب مجاني باحترافية"].map((item, index) => <Reveal key={item} as="li" delay={index * 100} className="flex items-center gap-3 font-semibold"><span className="grid size-7 place-items-center rounded-full bg-secondary text-primary"><Check className="size-4" /></span>{item}</Reveal>)}</ul></div></div>
         </section>
