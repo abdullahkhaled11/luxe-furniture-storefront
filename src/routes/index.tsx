@@ -12,6 +12,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import { useCart, type CartProduct } from "@/lib/cart-context";
+import CoverflowCarousel from "@/components/premium/CoverflowCarousel";
 
 const heroImage = "https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=2000&q=88";
 
@@ -133,6 +134,17 @@ function StorePage() {
               const FeatureIcon = Icon as typeof Truck;
               return <div key={label as string} className={`flex items-center gap-3 px-2 ${index > 0 ? "md:border-r" : ""}`}><span className="grid size-11 shrink-0 place-items-center rounded-full bg-secondary text-primary"><FeatureIcon /></span><span className="text-sm font-bold sm:text-base">{label as string}</span></div>;
             })}
+          </div>
+        </section>
+
+        <section className="bg-charcoal py-18 text-primary-foreground sm:py-24">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="mx-auto mb-10 max-w-2xl text-center">
+              <p className="text-sm font-bold text-gold-soft">الأكثر طلباً بين عملائنا</p>
+              <h2 className="mt-2 text-3xl font-extrabold sm:text-4xl">كتالوج حي لسرايرنا</h2>
+              <p className="mt-3 leading-7 text-primary-foreground/70">تصفّح الأسرّة الأكثر مبيعاً بتجربة تفاعلية — اسحب الكروت أو استخدم الأسهم.</p>
+            </div>
+            <CoverflowCarousel items={products.map((p) => ({ title: p.name, subtitle: p.short, price: `${formatPrice(p.price)} ر.س`, image: p.image }))} />
           </div>
         </section>
 
