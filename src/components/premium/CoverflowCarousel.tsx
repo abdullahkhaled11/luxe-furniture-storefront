@@ -7,13 +7,13 @@ const css = `
   .pnc-track { display: flex; will-change: transform; transition: transform .8s cubic-bezier(0.22, 1, 0.36, 1); }
   .pnc-card { position: relative; flex-shrink: 0; border-radius: 24px; overflow: hidden; cursor: pointer;
     border: 1px solid rgba(233, 196, 106, 0.22); box-shadow: 0 24px 50px -16px rgba(0, 0, 0, 0.7);
-    transition: transform .5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow .5s ease, border-color .5s ease; }
+    transition: transform .6s cubic-bezier(0.22, 1, 0.36, 1), opacity .6s ease, box-shadow .5s ease, border-color .5s ease; }
   .pnc-card::before { content: ""; position: absolute; inset: 0; border-radius: 24px; z-index: -1;
     background: linear-gradient(160deg, #3a2c1e, #241b12); border: 1px solid rgba(233, 196, 106, 0.1);
     transform: rotate(0.7deg) translate(3px, 4px); }
-  .pnc-card:hover { transform: translateY(-6px); }
-  .pnc-card.on { transform: translateY(-16px); border-color: rgba(233, 196, 106, 0.7);
-    box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.85), 0 0 42px rgba(217, 164, 65, 0.2); }
+  .pnc-card:hover { border-color: rgba(233, 196, 106, 0.5); }
+  .pnc-card.on { border-color: rgba(233, 196, 106, 0.8);
+    box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.85), 0 0 42px rgba(217, 164, 65, 0.25); }
   .pnc-inner { position: absolute; inset: 0; padding: 20px; border-radius: 24px; display: flex; flex-direction: column; justify-content: flex-end;
     background: radial-gradient(circle at 20% 10%, rgba(255, 255, 255, 0.18), transparent 55%), linear-gradient(160deg, #3a2c1e, #241b12); }
   .pnc-icon { position: absolute; inset: 0; display: grid; place-items: center; filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.5)); }
@@ -46,9 +46,9 @@ interface Props {
   cardWidth?: string;
 }
 
-const CARD_PREF = 300;
 const GAP = 18;
 const EDGE = 26;
+const APEX_R = 20;
 
 function useContainerWidth<T extends HTMLElement>() {
   const ref = useRef<T | null>(null);
@@ -100,7 +100,16 @@ export default function CoverflowCarousel({
     cardW = Math.floor(cardW);
   }
   const step = cardW + GAP;
-  const offset = w > 0 ? w / 2 - cardW / 2 - active * step : 0;
+  const offset = w > 0 ? w - cardW / 2 - APEX_R - active * step : 0;
+
+  const posFor = (i: number) => {
+    const k = active - i;
+    if (k < 0) return { scale: 0.9, ty: 10, opacity: 0.55, zIndex: 44 };
+    const scale = Math.max(0.58, 1 - k * 0.055);
+    const ty = k * 22;
+    const opacity = Math.max(0.5, 1 - k * 0.13);
+    return { scale, ty, opacity, zIndex: 50 - k };
+  };
 
   return (
     <section dir={rtl ? "rtl" : "ltr"}>
@@ -137,35 +146,44 @@ export default function CoverflowCarousel({
           }}
         >
           <div className="pnc-track" style={{ transform: `translateX(${offset}px)`, gap: GAP }}>
-            {items.map((it, i) => (
-              <div
-                key={i}
-                className={"pnc-card" + (i === active ? " on" : "")}
-                onClick={() => setActive(i)}
-                style={{ width: cardW, height }}
-              >
-                <div className="pnc-inner">
-                  <div className="pnc-badge">مميز</div>
-                  {it.image ? (
-                    <img
-                      src={it.image}
-                      alt={it.title}
-                      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
-                    />
-                  ) : (
-                    <div className="pnc-icon" style={{ fontSize: "clamp(52px, 7vw, 96px)", color: it.accent ?? undefined }}>
-                      {it.icon ?? "🪑"}
+            {items.map((it, i) => {
+              const p = posFor(i);
+              return (
+                <div
+                  key={i}
+                  className={"pnc-card" + (i === active ? " on" : "")}
+                  onClick={() => setActive(i)}
+                  style={{
+                    width: cardW,
+                    height,
+                    transform: `translateY(${p.ty}px) scale(${p.scale})`,
+                    opacity: p.opacity,
+                    zIndex: p.zIndex,
+                  }}
+                >
+                  <div className="pnc-inner">
+                    <div className="pnc-badge">مميز</div>
+                    {it.image ? (
+                      <img
+                        src={it.image}
+                        alt={it.title}
+                        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+                      />
+                    ) : (
+                      <div className="pnc-icon" style={{ fontSize: "clamp(52px, 7vw, 96px)", color: it.accent ?? undefined }}>
+                        {it.icon ?? "🪑"}
+                      </div>
+                    )}
+                    <div style={{ fontWeight: 800, fontSize: "clamp(16px, 1.9vw, 20px)" }}>{it.title}</div>
+                    <div style={{ fontSize: 13, color: theme.gold, margin: "3px 0 10px" }}>{it.subtitle}</div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", color: theme.muted, fontSize: 13 }}>
+                      <span>السعر</span>
+                      <b style={{ color: theme.goldSoft, fontSize: 17 }}>{it.price}</b>
                     </div>
-                  )}
-                  <div style={{ fontWeight: 800, fontSize: "clamp(16px, 1.9vw, 20px)" }}>{it.title}</div>
-                  <div style={{ fontSize: 13, color: theme.gold, margin: "3px 0 10px" }}>{it.subtitle}</div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", color: theme.muted, fontSize: 13 }}>
-                    <span>السعر</span>
-                    <b style={{ color: theme.goldSoft, fontSize: 17 }}>{it.price}</b>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
           <div className="pnc-fade pnc-fade-l" aria-hidden />
           <div className="pnc-fade pnc-fade-r" aria-hidden />
