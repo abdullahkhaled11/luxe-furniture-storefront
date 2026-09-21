@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { theme } from "./theme";
 
 const css = `
@@ -13,9 +13,11 @@ const css = `
     box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.85), 0 0 46px rgba(217, 164, 65, 0.3); }
   .pnc-inner { position: absolute; inset: 0; padding: 20px; border-radius: 24px; display: flex; flex-direction: column; justify-content: flex-end;
     background: radial-gradient(circle at 20% 10%, rgba(255, 255, 255, 0.18), transparent 55%), linear-gradient(160deg, #3a2c1e, #241b12); }
-  .pnc-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; animation: pncIn .85s cubic-bezier(0.22, 1, 0.36, 1) both; }
-  @keyframes pncIn { from { opacity: 0; transform: scale(1.08); } to { opacity: 1; transform: none; } }
-  .pnc-meta { animation: pncFade .7s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .pnc-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; will-change: transform, opacity;
+    animation: pncSlide .58s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  @keyframes pncSlide { from { opacity: var(--do, 0.6); transform: translateX(var(--dx, 0px)) scale(var(--ds, 0.94)); }
+    to { opacity: 1; transform: translateX(0) scale(1); } }
+  .pnc-meta { animation: pncFade .6s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--pnc-delay, 0ms) + 120ms) both; }
   @keyframes pncFade { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
   .pnc-badge { position: absolute; top: 14px; right: 14px; background: ${theme.gold}; color: #17110b; font-size: 11px; font-weight: 800;
     padding: 6px 12px; border-radius: 999px; opacity: 0; transform: translateY(-6px); transition: all .4s ease; }
@@ -80,9 +82,13 @@ export default function CoverflowCarousel({
   const [active, setActive] = useState(0);
   const startX = useRef<number | null>(null);
   const moved = useRef(0);
+  const dirRef = useRef<1 | -1>(1);
 
   const go = useCallback(
-    (dir: number) => setActive((a) => (a + dir + items.length) % items.length),
+    (d: number) => {
+      dirRef.current = d >= 0 ? 1 : -1;
+      setActive((a) => (a + d + items.length) % items.length);
+    },
     [items.length],
   );
 
@@ -105,7 +111,12 @@ export default function CoverflowCarousel({
     const top = abs === 0 ? 4 : abs === 1 ? 22 : 40;
     const scale = abs === 0 ? 1 : abs === 1 ? 0.9 : 0.8;
     const opacity = abs === 2 ? 0.82 : 1;
-    return { o, idx, item: items[idx]!, top, scale, opacity, zIndex: 50 - abs * 10 };
+    const dd = dirRef.current;
+    const reach = dd * o;
+    const dx = dd * (60 + Math.max(0, reach) * 30);
+    const do_ = 0.55 + Math.min(Math.max(reach, -1), 1) * 0.1;
+    const delay = Math.max(0, reach) * 45;
+    return { o, idx, item: items[idx]!, top, scale, opacity, zIndex: 50 - abs * 10, dx, do_, delay };
   });
 
   const nextOn = (idx: number) => setActive(idx);
@@ -145,26 +156,32 @@ export default function CoverflowCarousel({
           }}
         >
           <div className="pnc-stage">
-            {slots.map(({ o, idx, item, top, scale, opacity, zIndex }) => (
+            {slots.map(({ o, idx, item, top, scale, opacity, zIndex, dx, do_, delay }) => (
               <div
                 key={o}
                 className={"pnc-card" + (o === 0 ? " on" : "")}
                 onClick={() => nextOn(idx)}
-                style={{
-                  left: "50%",
-                  marginLeft: -cardW / 2,
-                  width: cardW,
-                  height,
-                  top,
-                  transform: `translateX(${o * stepX}px) scale(${scale})`,
-                  opacity,
-                  zIndex,
-                }}
+                style={
+                  {
+                    left: "50%",
+                    marginLeft: -cardW / 2,
+                    width: cardW,
+                    height,
+                    top,
+                    transform: `translateX(${o * stepX}px) scale(${scale})`,
+                    opacity,
+                    zIndex,
+                    "--dx": `${dx}px`,
+                    "--ds": "0.94",
+                    "--do": do_.toFixed(2),
+                    "--pnc-delay": `${delay}ms`,
+                  } as CSSProperties
+                }
               >
                 <div className="pnc-inner">
                   <div className="pnc-badge">مميز</div>
                   {item.image ? (
-                    <img key={item.image} className="pnc-img" src={item.image} alt={item.title} />
+                    <img key={idx} className="pnc-img" src={item.image} alt={item.title} />
                   ) : (
                     <div className="pnc-icon" style={{ fontSize: "clamp(52px, 7vw, 96px)", color: item.accent ?? undefined }}>
                       {item.icon ?? "🪑"}
