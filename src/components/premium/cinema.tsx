@@ -34,12 +34,14 @@ export function Reveal({
   className = "",
   delay = 0,
   y = 30,
+  from = "up",
   as: Tag = "div",
 }: {
   children: ReactNode;
   className?: string;
   delay?: number;
   y?: number;
+  from?: "up" | "left" | "right";
   as?: "div" | "section" | "article" | "li" | "figure" | "aside";
 }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -61,7 +63,13 @@ export function Reveal({
     return () => io.disconnect();
   }, []);
 
-  const style = { transitionDelay: `${delay}ms`, "--dn-y": `${y}px` } as CSSProperties;
+  const fromTransform =
+    from === "left"
+      ? "translate3d(-64px, 0, 0)"
+      : from === "right"
+        ? "translate3d(64px, 0, 0)"
+        : "translate3d(0, var(--dn-y), 0)";
+  const style = { transitionDelay: `${delay}ms`, "--dn-y": `${y}px`, "--dn-from": fromTransform } as CSSProperties;
   return (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     <Tag ref={ref as any} style={style} className={`dn-reveal ${seen ? "dn-reveal-in" : ""} ${className}`}>
@@ -203,7 +211,7 @@ const cinemaCss = `
 }
 
 /* ---------- reveal on scroll ---------- */
-.dn-reveal { opacity: 0; transform: translateY(var(--dn-y, 30px)); transition: opacity 1s ${AN_EASE}, transform 1s ${AN_EASE}; will-change: opacity, transform; }
+.dn-reveal { opacity: 0; transform: var(--dn-from, translate3d(0, var(--dn-y, 30px), 0)); transition: opacity 1s ${AN_EASE}, transform 1s ${AN_EASE}; will-change: opacity, transform; }
 .dn-reveal-in { opacity: 1; transform: none; }
 
 /* ---------- marquee ---------- */
