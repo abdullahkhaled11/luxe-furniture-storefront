@@ -29,6 +29,8 @@ const products = [
 type Product = (typeof products)[number];
 type View = "store" | "checkout" | "success";
 
+const formatPrice = (value: number) => new Intl.NumberFormat("ar-SA").format(value);
+
 const carouselItems = [
   ...products.map((p) => ({ title: p.name, subtitle: p.short, price: `${formatPrice(p.price)} ر.س`, image: p.image })),
   ...[
@@ -61,8 +63,6 @@ export const Route = createFileRoute("/")({
   }),
   component: StorePage,
 });
-
-const formatPrice = (value: number) => new Intl.NumberFormat("ar-SA").format(value);
 
 function StorePage() {
   const cart = useCart();
