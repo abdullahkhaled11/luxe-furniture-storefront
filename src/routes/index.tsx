@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/compone
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import { useCart, type CartProduct } from "@/lib/cart-context";
 import CoverflowCarousel from "@/components/premium/CoverflowCarousel";
+import { CinemaKit, MarqueeBand, ParallaxImage, Reveal, StatsBand } from "@/components/premium/cinema";
 
 const heroImage = "https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=2000&q=88";
 
@@ -85,6 +86,7 @@ function StorePage() {
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-background text-foreground">
+      <CinemaKit />
       <div className="bg-charcoal px-4 py-2 text-center text-xs font-medium text-primary-foreground sm:text-sm">
         شحن مجاني لجميع مناطق المملكة
       </div>
@@ -112,27 +114,54 @@ function StorePage() {
       </Sheet>
 
       <main>
-        <section id="home" className="relative min-h-[72vh] overflow-hidden sm:min-h-[78vh]">
-          <img src={heroImage} alt="غرفة نوم فاخرة بإضاءة دافئة" className="absolute inset-0 h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-foreground/55" />
-          <div className="relative mx-auto flex min-h-[72vh] max-w-7xl items-center px-5 py-20 sm:min-h-[78vh] sm:px-8">
-            <div className="max-w-2xl text-primary-foreground">
-              <p className="mb-4 text-sm font-bold text-gold-soft sm:text-base">راحة تستحقها كل ليلة</p>
-              <h1 className="text-5xl font-extrabold leading-tight sm:text-7xl">نوم هانئ يدوم</h1>
-              <p className="mt-5 text-lg font-medium sm:text-2xl">أفضل أطقم وأسرّة بجودة عالية</p>
-              <div className="mt-8 flex flex-wrap gap-3">
+        <section id="home" className="dn-hero">
+          <div className="dn-hero-bg">
+            <img src={heroImage} alt="غرفة نوم فاخرة بإضاءة دافئة" />
+          </div>
+          <div className="dn-hero-veil" />
+          <div className="dn-hero-glow g1" />
+          <div className="dn-hero-glow g2" />
+          <div className="relative z-10 mx-auto w-full max-w-7xl px-5 py-28 sm:px-8">
+            <div className="max-w-3xl text-primary-foreground">
+              <p className="mb-6 flex items-center gap-3 text-sm font-bold text-gold-soft sm:text-base" style={{ opacity: 0, animation: "dnFade 0.8s ease 2.45s forwards" }}>
+                <span className="h-px w-10 bg-gold-soft/70" />
+                راحة تستحقها كل ليلة
+              </p>
+              <h1 className="text-5xl font-extrabold leading-[1.12] sm:text-7xl lg:text-8xl">
+                {["نوم", "هانئ", "يدوم"].map((word, i) => (
+                  <span key={word} className="dn-word">
+                    {i > 0 && " "}
+                    <span className={i === 2 ? "text-gold-soft" : ""} style={{ animationDelay: `${2.35 + i * 0.18}s` }}>{word}</span>
+                  </span>
+                ))}
+              </h1>
+              <p className="mt-6 max-w-xl text-lg font-medium leading-8 text-primary-foreground/75 sm:text-2xl" style={{ opacity: 0, animation: "dnFade 0.8s ease 2.75s forwards" }}>
+                أفضل أطقم وأسرّة بجودة عالية — نصنع راحتك بخامات مختارة وخدمة تركيب تصل لبيتك.
+              </p>
+              <div className="mt-9 flex flex-wrap gap-3" style={{ opacity: 0, animation: "dnFade 0.9s ease 2.95s forwards" }}>
                 <Button variant="luxury" size="lg" asChild><a href="#beds">تسوق الآن <ChevronLeft /></a></Button>
                 <Button variant="heroOutline" size="lg" asChild><a href="#about">تعرف علينا</a></Button>
               </div>
+              <div className="mt-12 flex flex-wrap gap-3">
+                <span className="dn-chip-float"><span className="dn-chip" style={{ animationDelay: "3.1s" }}><i>✧</i>ضمان شامل 5 سنوات</span></span>
+                <span className="dn-chip-float f2"><span className="dn-chip" style={{ animationDelay: "3.25s" }}><i>✧</i>خشب طبيعي 100%</span></span>
+                <span className="dn-chip-float f3"><span className="dn-chip" style={{ animationDelay: "3.4s" }}><i>✧</i>تركيب مجاني</span></span>
+              </div>
             </div>
+          </div>
+          <div className="dn-scroll-cue">
+            <span className="dn-mouse" />
+            <i>اسحب للأسفل</i>
           </div>
         </section>
 
+        <MarqueeBand items={["سرير لافندر", "توصيل مجاني", "ضمان شامل", "خشب طبيعي", "خياطة يدوية", "تركيب مجاني", "خامة فاخرة", "تصميم عصري"]} />
+
         <section className="border-b bg-card">
           <div className="mx-auto grid max-w-7xl grid-cols-2 gap-y-8 px-4 py-8 md:grid-cols-4 md:px-8">
-            {[[Truck,"شحن مجاني"],[Award,"جودة صناعة ممتازة"],[ShieldCheck,"دفع آمن"],[Headphones,"دعم وتواصل 24/7"]].map(([Icon,label], index) => {
+            {[[Truck, "شحن مجاني"], [Award, "جودة صناعة ممتازة"], [ShieldCheck, "دفع آمن"], [Headphones, "دعم وتواصل 24/7"]].map(([Icon, label], index) => {
               const FeatureIcon = Icon as typeof Truck;
-              return <div key={label as string} className={`flex items-center gap-3 px-2 ${index > 0 ? "md:border-r" : ""}`}><span className="grid size-11 shrink-0 place-items-center rounded-full bg-secondary text-primary"><FeatureIcon /></span><span className="text-sm font-bold sm:text-base">{label as string}</span></div>;
+              return <Reveal key={label as string} delay={index * 90}><div className={`flex items-center gap-3 px-2 ${index > 0 ? "md:border-r" : ""}`}><span className="grid size-11 shrink-0 place-items-center rounded-full bg-secondary text-primary"><FeatureIcon /></span><span className="text-sm font-bold sm:text-base">{label as string}</span></div></Reveal>;
             })}
           </div>
         </section>
@@ -148,10 +177,22 @@ function StorePage() {
           </div>
         </section>
 
+        <section className="border-t border-primary/10 bg-charcoal text-primary-foreground">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-2xl pt-16 text-center">
+              <p className="text-sm font-bold text-gold-soft">أرقام تتحدث عنا</p>
+              <h2 className="mt-2 text-3xl font-extrabold sm:text-4xl">ثقة تستحقها راحة نومك</h2>
+            </div>
+            <div className="relative">
+              <StatsBand stats={[{ value: 8, suffix: "+", label: "سنوات خبرة" }, { value: 25000, suffix: "+", label: "عميل سعيد" }, { value: 1200, suffix: "+", label: "قطعة مركّبة" }, { value: 98, suffix: "%", label: "رضا العملاء" }]} />
+            </div>
+          </div>
+        </section>
+
         <section id="beds" className="mx-auto max-w-7xl px-4 py-18 sm:px-6 sm:py-24 lg:px-8">
           <SectionHeading eyebrow="اختيارات صنعت لراحتك" title="أحدث سرايرنا" description="تصاميم تجمع بين جودة الخامات وأناقة التفاصيل لتمنحك بداية أفضل لكل يوم." />
           <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3">
-            {products.map((product) => <ProductCard key={product.id} product={product} onOpen={() => { setSelected(product); setSelectedSize("دبل"); setQuantity(1); }} onAdd={() => { cart.addItem(product, "دبل"); setCartOpen(true); }} />)}
+            {products.map((product, index) => <Reveal key={product.id} delay={index * 90}><ProductCard product={product} onOpen={() => { setSelected(product); setSelectedSize("دبل"); setQuantity(1); }} onAdd={() => { cart.addItem(product, "دبل"); setCartOpen(true); }} /></Reveal>)}
           </div>
         </section>
 
@@ -171,14 +212,14 @@ function StorePage() {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionHeading eyebrow="ثقتكم مصدر فخرنا" title="آراء عملائنا" description="تجارب حقيقية من عملاء اختاروا الراحة والجودة مع دار النوم." />
             <div className="mt-10 grid gap-5 md:grid-cols-3">
-              {([ ["نورة العتيبي","جدة","السّرير أجمل من الصور، والخامة ممتازة جداً. وصلني في الموعد والتركيب كان مرتب وسريع."], ["عبدالله القحطاني","الرياض","تجربة شراء مريحة من البداية للنهاية، المقاس مضبوط وجودة التنجيد فاقت توقعي."], ["ريم الحربي","الخبر","تعامل راقٍ وسرعة في الرد. السرير غيّر شكل الغرفة بالكامل وأنصح به بكل ثقة."] ] as const).map(([name,city,text]) => <article key={name} className="rounded-lg border bg-card p-6 shadow-sm"><div className="mb-5 flex text-primary">{Array.from({length:5}).map((_,i) => <Star key={i} className="size-4 fill-current" />)}</div><p className="leading-8 text-muted-foreground">“{text}”</p><div className="mt-6 flex items-center gap-3"><div className="grid size-11 place-items-center rounded-full bg-charcoal font-bold text-primary-foreground">{name.charAt(0)}</div><div><h3 className="font-bold">{name}</h3><p className="text-xs text-muted-foreground">{city}</p></div></div></article>)}
+              {([ ["نورة العتيبي", "جدة", "السّرير أجمل من الصور، والخامة ممتازة جداً. وصلني في الموعد والتركيب كان مرتب وسريع."], ["عبدالله القحطاني", "الرياض", "تجربة شراء مريحة من البداية للنهاية، المقاس مضبوط وجودة التنجيد فاقت توقعي."], ["ريم الحربي", "الخبر", "تعامل راقٍ وسرعة في الرد. السرير غيّر شكل الغرفة بالكامل وأنصح به بكل ثقة."] ] as const).map(([name, city, text], index) => <Reveal key={name} as="article" delay={index * 110} className="h-full"><div className="h-full rounded-lg border bg-card p-6 shadow-sm"><div className="mb-5 flex text-primary">{Array.from({ length: 5 }).map((_, i) => <Star key={i} className="size-4 fill-current" />)}</div><p className="leading-8 text-muted-foreground">“{text}”</p><div className="mt-6 flex items-center gap-3"><div className="grid size-11 place-items-center rounded-full bg-charcoal font-bold text-primary-foreground">{name.charAt(0)}</div><div><h3 className="font-bold">{name}</h3><p className="text-xs text-muted-foreground">{city}</p></div></div></div></Reveal>)}
             </div>
           </div>
         </section>
 
         <section id="about" className="grid lg:grid-cols-2">
-          <div className="min-h-[380px]"><img src="https://images.unsplash.com/photo-1615874694520-474822394e73?auto=format&fit=crop&w=1400&q=85" alt="تفاصيل سرير فاخر مصنوع بعناية" className="h-full w-full object-cover" /></div>
-          <div className="flex items-center bg-card px-6 py-14 sm:px-14 lg:px-20"><div className="max-w-xl"><p className="font-bold text-primary">صناعة نهتم بكل تفاصيلها</p><h2 className="mt-3 text-3xl font-extrabold sm:text-4xl">جودة تضمنها سنوات من الخبرة</h2><p className="mt-5 leading-8 text-muted-foreground">نصنع أسرّتنا لتكون جزءاً من راحتك لسنوات، بخامات مختارة وعناية تبدأ من التصميم حتى التركيب في منزلك.</p><ul className="mt-8 grid gap-4">{["خامات متينة مختارة بعناية","ضمان شامل لراحة بالك","تركيب مجاني باحترافية"].map((item) => <li key={item} className="flex items-center gap-3 font-semibold"><span className="grid size-7 place-items-center rounded-full bg-secondary text-primary"><Check className="size-4" /></span>{item}</li>)}</ul></div></div>
+          <div className="min-h-[380px]"><ParallaxImage src="https://images.unsplash.com/photo-1615874694520-474822394e73?auto=format&fit=crop&w=1400&q=85" alt="تفاصيل سرير فاخر مصنوع بعناية" /></div>
+          <div className="flex items-center bg-card px-6 py-14 sm:px-14 lg:px-20"><div className="max-w-xl"><p className="font-bold text-primary">صناعة نهتم بكل تفاصيلها</p><h2 className="mt-3 text-3xl font-extrabold sm:text-4xl">جودة تضمنها سنوات من الخبرة</h2><p className="mt-5 leading-8 text-muted-foreground">نصنع أسرّتنا لتكون جزءاً من راحتك لسنوات، بخامات مختارة وعناية تبدأ من التصميم حتى التركيب في منزلك.</p><ul className="mt-8 grid gap-4">{["خامات متينة مختارة بعناية", "ضمان شامل لراحة بالك", "تركيب مجاني باحترافية"].map((item, index) => <Reveal key={item} as="li" delay={index * 100} className="flex items-center gap-3 font-semibold"><span className="grid size-7 place-items-center rounded-full bg-secondary text-primary"><Check className="size-4" /></span>{item}</Reveal>)}</ul></div></div>
         </section>
       </main>
 
