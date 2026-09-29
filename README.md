@@ -22,7 +22,7 @@ single-page shopping experience with SSR.
 | Language | TypeScript |
 | Styling | Tailwind CSS 4 |
 | Components | Radix UI primitives (shadcn/ui), Lucide icons, Sonner toasts |
-| Components | Embla Carousel, Recharts, React Query |
+| Components | React Query |
 | Build | Vite, ESLint, Prettier |
 
 ## Features
