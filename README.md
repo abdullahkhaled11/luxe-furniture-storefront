@@ -1,126 +1,104 @@
-# Remix of Dar Al Nom E-commerce
+# Luxe Furniture Storefront
 
-Build a complete single-product Arabic (RTL) e-commerce store for a bed company. 
+<div dir="rtl">
 
-The store sells ONLY ONE product: beds (سراير). The design must closely match the 
+**متجر أثاث فاخر** — واجهة تجارة إلكترونية عربية بالكامل (RTL) لمتجر متخصص في
+الأثاث الفاخر، مع سلة مشتريات وخطوة إتمام شراء ومكتبة مؤثرات حركية.
 
-style of the Saudi furniture store "أثاث نور" (furniture-nor.com) which uses Salla.
+</div>
 
-GLOBAL SETTINGS:
+A full Arabic right-to-left storefront for a premium furniture retailer, built as a
+two-route app: a shopping experience and an isolated component showcase.
 
-- Full Arabic language, dir="rtl", clean easy-to-read Arabic font (Tajawal)
+---
 
-- Color palette: warm furniture-store tones — white/cream background, dark 
+## Stack
 
-  charcoal text, amber/gold accent (#B8860B or #D4A017) for buttons and highlights
+| Layer | Technology |
+|---|---|
+| Framework | React 19, TanStack Start (file-based routing, SSR) |
+| Language | TypeScript |
+| Styling | Tailwind CSS 4 |
+| Components | Radix UI primitives (shadcn/ui), Lucide icons, Sonner toasts |
+| Components | Embla Carousel, Recharts, React Query |
+| Build | Vite, ESLint, Prettier |
 
-- Modern luxury feel, generous spacing, rounded corners, subtle shadows
+## Features
 
-SECTIONS (top to bottom):
+**Storefront (`/`)**
 
-1. TOP BAR: shipping notice "شحن مجاني لجميع مناطق المملكة" on dark background.
+- Full RTL Arabic UI with `Intl.NumberFormat("ar-SA")` for currency and dates.
+- Complete purchase flow: `store` → `checkout` → `success`, with an order summary.
+- Cart context (`src/lib/cart-context.tsx`) with add, remove, and quantity updates
+  exposed through a single `useCart()` hook.
+- Product listing with coverflow carousel, hero, marquee band, parallax imagery,
+  scroll-triggered reveals, and a stats band.
+- Mobile navigation via a Radix sheet, with the full experience preserved on
+  desktop.
 
-2. HEADER: logo (placeholder — use brand name "دار النوم"), nav menu 
+**Component showcase (`/showcase`)**
 
-   (الرئيسية، السراير، العروض، آراء العملاء، تواصل معنا), cart icon with 
+An isolated route for demoing the motion work without product context.
 
-   badge showing item count, sticky on scroll.
+## Custom motion components
 
-3. HERO BANNER: full-width with a large elegant bed photo background (use a 
+`src/components/premium/` is a self-contained component library built for this
+project rather than pulled from a template:
 
-   free stock image of a luxury bed with warm lighting), overlay text:
+| Component | What it does |
+|---|---|
+| `CoverflowCarousel` | Coverflow card stack with a physical card-movement model — new cards glide into the centre from the pressed side, outgoing edges exit while the stack shape is preserved |
+| `KineticHero` | Layered entrance choreography for the hero |
+| `ScrollStory` | Scroll-linked reveal sequencing |
+| `Marquee` | Infinite horizontal ticker |
+| `ColorConfigurator` | Interactive swatch selection bound to product state |
+| `Bed` / `Sofa` | Product-scene primitives used by the showcase |
+| `cinema.tsx` | `CinemaKit`, `MarqueeBand`, `ParallaxImage`, `Reveal`, `StatsBand` |
+| `effects.tsx` | `Grain`, `CursorGlow`, `GoldPill` — atmosphere overlays |
+| `theme.ts` | Shared design tokens for the premium surface |
 
-   - Big heading "نوم هانئ يدوم"
+The carousel was the main engineering effort. The visible behaviour required
+replacing the naive index swap with a keyed transition so both the entering card
+and the exiting edges animate in the same frame:
 
-   - Subheading "افضل أطقم وأسرّة بجودة عالية"
+```
+feat: physical card movement - cards glide between pyramid slots,
+      new card enters from pressed side, edges exit smoothly,
+      pyramid shape preserved
+```
 
-   - CTA buttons: "تسوق الآن" (amber) + "تعرف علينا" (outline)
+## Project structure
 
-4. TRUST BAR: 4 features in a row with icons — شحن مجاني، جودة صناعة ممتازة، 
+```
+src/
+  components/premium/   motion + scene components
+  components/ui/        Radix / shadcn primitives
+  lib/cart-context.tsx  cart state and useCart()
+  routes/index.tsx      storefront
+  routes/showcase.tsx   component showcase
+```
 
-   دفع آمن، دعم وتواصل 24/7.
+## Getting started
 
-5. PRODUCT GRID — "أحدث سرايرنا": show 6 bed product cards (free stock bed 
-
-   images in warm bedroom settings). Each card: image, Arabic name, 
-
-   "وصف مختصر", price in SAR (sale + old strikethrough price), 
-
-   rating stars, "أضف للسلة" button. Cards clickable to open a detail modal.
-
-6. PRODUCT DETAIL MODAL: large image gallery, name, description, star rating 
-
-   (4.8 · 120 تقييم), price, VARIANT SELECTOR for size: 
-
-   (مفرد / دبل / كينج / كوين) as pill buttons, quantity stepper (+/-), 
-
-   big amber buttons "أضف إلى السلة" and "اشترِ الآن". 
-
-   Accordion sections: الوصف، المواصفات، طرق الشحن، سياسة الإرجاع.
-
-7. DEALS SECTION — "عروضنا المميزة": wide banner with gradient background, 
-
-   "خصم يصل إلى 30% على طقم السرير الكامل" + countdown timer.
-
-8. CUSTOMER REVIEWS — "آراء عملائنا": 3 review cards with Saudi names, 
-
-   Arabic reviews, 5 stars.
-
-9. ABOUT STRIP: "جودة تضمنها سنوات من الخبرة" with image + bullets 
-
-   (خامات متينة، ضمان شامل، تركيب مجاني).
-
-10. FOOTER: brand info, quick links, contact (phone +966 5XXXXXXXX / 
-
-    WhatsApp / email), payment icons (مدى، Visa، Apple Pay، تابي، تمارا),
-
-    "شروط الاستخدام" and "سياسة الخصوصية".
-
-11. WHATSAPP FLOATING BUTTON: fixed bottom-left green WhatsApp button 
-
-    that opens wa.me link.
-
-FUNCTIONALITY:
-
-- Cart drawer (slides from side): line items with image, name, size, qty 
-
-  stepper, remove, subtotal, "إتمام الطلب" CTA.
-
-- Checkout view: form (الاسم، الهاتف، المدينة، العنوان التفصيلي، ملاحظات)، 
-
-  payment method selection (الدفع عند الاستلام / مدى / Apple Pay)، 
-
-  order summary on the side, confirm button.
-
-- Success screen after order with order number.
-
-- State management with React Context + localStorage so cart persists.
-
-- Make everything fully responsive for mobile first (grid collapses to 1-2 
-
-  columns, menu becomes hamburger).
-
-Use free stock images from images.unsplash.com for beds. Do NOT invent 
-
-brand logos — keep the placeholder "دار النوم" as text.
-
-This project was built with [Lovable](https://lovable.dev).
-
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/1f5c376f-9b80-4e1f-b6f2-2f56f5d3ad78).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+Requires Node.js 18+.
 
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
+git clone https://github.com/abdullahkhaled11/luxe-furniture-storefront.git
+cd luxe-furniture-storefront
+npm install
 npm run dev
 ```
+
+## Scripts
+
+```sh
+npm run dev      # start the dev server
+npm run build    # production build
+npm run preview  # preview the production build
+npm run lint     # ESLint
+npm run format   # Prettier
+```
+
+## License
+
+MIT
