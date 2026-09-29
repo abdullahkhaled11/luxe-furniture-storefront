@@ -8,7 +8,9 @@
 </div>
 
 A full Arabic right-to-left storefront for a premium furniture retailer, built as a
-two-route app: a shopping experience and an isolated component showcase.
+single-page shopping experience with SSR.
+
+**Live demo:** https://luxe-furniture-storefront.vercel.app
 
 ---
 
@@ -36,10 +38,6 @@ two-route app: a shopping experience and an isolated component showcase.
 - Mobile navigation via a Radix sheet, with the full experience preserved on
   desktop.
 
-**Component showcase (`/showcase`)**
-
-An isolated route for demoing the motion work without product context.
-
 ## Custom motion components
 
 `src/components/premium/` is a self-contained component library built for this
@@ -48,13 +46,8 @@ project rather than pulled from a template:
 | Component | What it does |
 |---|---|
 | `CoverflowCarousel` | Coverflow card stack with a physical card-movement model — new cards glide into the centre from the pressed side, outgoing edges exit while the stack shape is preserved |
-| `KineticHero` | Layered entrance choreography for the hero |
-| `ScrollStory` | Scroll-linked reveal sequencing |
-| `Marquee` | Infinite horizontal ticker |
-| `ColorConfigurator` | Interactive swatch selection bound to product state |
-| `Bed` / `Sofa` | Product-scene primitives used by the showcase |
 | `cinema.tsx` | `CinemaKit`, `MarqueeBand`, `ParallaxImage`, `Reveal`, `StatsBand` |
-| `effects.tsx` | `Grain`, `CursorGlow`, `GoldPill` — atmosphere overlays |
+| `effects.tsx` | `Grain`, `CursorGlow` — atmosphere overlays |
 | `theme.ts` | Shared design tokens for the premium surface |
 
 The carousel was the main engineering effort. The visible behaviour required
@@ -71,11 +64,10 @@ feat: physical card movement - cards glide between pyramid slots,
 
 ```
 src/
-  components/premium/   motion + scene components
+  components/premium/   motion components + design tokens
   components/ui/        Radix / shadcn primitives
   lib/cart-context.tsx  cart state and useCart()
   routes/index.tsx      storefront
-  routes/showcase.tsx   component showcase
 ```
 
 ## Getting started

@@ -1,5 +1,4 @@
-import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
-import { theme } from "./theme";
+import { useEffect, useRef } from "react";
 
 const grainCss = `
   .pnf-grain { position: fixed; inset: -50%; width: 200%; height: 200%; pointer-events: none; z-index: 2000; opacity: .06;
@@ -67,77 +66,5 @@ export function CursorGlow() {
       <style>{glowCss}</style>
       <div ref={ref} className="pnf-glow" aria-hidden="true" />
     </>
-  );
-}
-
-interface MagneticProps {
-  children: ReactNode;
-  strength?: number;
-  style?: CSSProperties;
-  className?: string;
-}
-
-/** Button/link that gently follows the mouse. */
-export function Magnetic({ children, strength = 0.3, style, className }: MagneticProps) {
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    if (!window.matchMedia("(pointer: fine)").matches) return;
-    const onMove = (e: PointerEvent) => {
-      const r = el.getBoundingClientRect();
-      const x = (e.clientX - r.left - r.width / 2) * strength;
-      const y = (e.clientY - r.top - r.height / 2) * strength;
-      el.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`;
-    };
-    const onLeave = () => {
-      el.style.transform = "";
-    };
-    el.addEventListener("pointermove", onMove);
-    el.addEventListener("pointerleave", onLeave);
-    return () => {
-      el.removeEventListener("pointermove", onMove);
-      el.removeEventListener("pointerleave", onLeave);
-    };
-  }, [strength]);
-
-  return (
-    <div
-      ref={ref}
-      className={className}
-      style={{
-        display: "inline-block",
-        transition: "transform .2s cubic-bezier(.22,1,.36,1), opacity .3s",
-        ...style,
-      }}
-    >
-      {children}
-    </div>
-  );
-}
-
-/** CTA pill tuned for the furniture theme. */
-export function GoldPill({ children, onClick }: { children: ReactNode; onClick?: () => void }) {
-  return (
-    <Magnetic strength={0.25}>
-      <button
-        onClick={onClick}
-        style={{
-          background: `linear-gradient(120deg, ${theme.goldSoft}, ${theme.gold}, ${theme.goldDeep})`,
-          color: "#17110b",
-          fontWeight: 900,
-          fontSize: 18,
-          fontFamily: "inherit",
-          padding: "20px 46px",
-          borderRadius: 999,
-          cursor: "pointer",
-          border: "none",
-          boxShadow: `0 22px 50px -12px rgba(217,164,65,.55)`,
-        }}
-      >
-        {children}
-      </button>
-    </Magnetic>
   );
 }
